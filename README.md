@@ -2,9 +2,9 @@
 
 ##### Add kafka servers to /etc/hosts
 ```
-192.168.1.2 kafka-01.server
-192.168.1.3 kafka-02.server
-192.168.1.4 kafka-03.server
+192.168.1.2 kafka-01.local1.server
+192.168.1.3 kafka-02.local2.server
+192.168.1.4 kafka-03.local3.server
 ```
 * You should be able to connect to the kafka brokers via port 9092
 
