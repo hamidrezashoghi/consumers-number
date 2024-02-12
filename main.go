@@ -13,13 +13,17 @@ func main() {
 
 	// Kafka consumers
 	servers := []string{"192.168.1.2:9092", "192.168.1.3:9092", "192.168.1.4:9092"}
-	var consumersNumber = make(map[string]int, 3)
+
+	consumersNumber := make(map[string]int, 3)
 	groupName := "test-group"
+	timeout := "10000"
+	kafkaPath := "/usr/local/kafka/bin/"
+	consumerServersFile := "/var/lib/node_exporter/textfile_collector/consumer_servers.prom"
 
 	// Get number of consumers per kafka
 	for _, server := range servers {
-		cmdConsumer := exec.Command("/usr/local/kafka/bin/kafka-consumer-groups.sh", "--dry-run",
-			"--bootstrap-server", server, "--timeout", "10000", "--group="+groupName,
+		cmdConsumer := exec.Command(kafkaPath+"kafka-consumer-groups.sh", "--dry-run",
+			"--bootstrap-server", server, "--timeout", timeout, "--group="+groupName,
 			"--members", "--describe")
 
 		cmdWc := exec.Command("wc", "-l")
@@ -67,7 +71,7 @@ func main() {
 
 	defer file.Close()
 
-	os.Remove("/var/lib/node_exporter/textfile_collector/consumer_servers.prom")
+	_ = os.Remove(consumerServersFile)
 	_, _ = file.WriteString("# HELP consumer_servers Metric\n")
 	_, _ = file.WriteString("# TYPE consumer_servers gauge\n")
 	for region, consumers := range consNumbers {
@@ -81,7 +85,7 @@ func main() {
 	_ = os.Chown("consumer_servers.prom", 997, 998)
 
 	// /var/lib/node_exporter/textfile_collector/
-	if err := os.Rename("consumer_servers.prom", "/var/lib/node_exporter/textfile_collector/consumer_servers.prom"); err != nil {
-		log.Fatalln("Couldn't move consumer_servers.prom to /var/lib/node_exporter/textfile_collector/ directory.", err)
+	if err := os.Rename("consumer_servers.prom", consumerServersFile); err != nil {
+		log.Fatalln("Couldn't move consumer_servers.prom to /var/lib/node_exporter/textfile_collector/ path.", err)
 	}
 }
