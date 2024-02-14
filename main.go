@@ -82,7 +82,9 @@ func main() {
 	// execute below command to get uid and gid of node_exporter
 	// # id node_exporter
 	// uid=997(node_exporter) gid=998(node_exporter) groups=998(node_exporter)
-	_ = os.Chown("consumer_servers.prom", 997, 998)
+	var uidNodeExporter int = 997
+	var gidNodeExporter int = 998
+	_ = os.Chown("consumer_servers.prom", uidNodeExporter, gidNodeExporter)
 
 	// /var/lib/node_exporter/textfile_collector/
 	if err := os.Rename("consumer_servers.prom", consumerServersFile); err != nil {
